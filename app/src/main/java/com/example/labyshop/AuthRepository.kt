@@ -10,7 +10,7 @@ class AuthRepository(
 
         val request = LoginRequest(
             identifier = identifier,
-            password = password,
+            password = password
         )
 
         return api.login(request)
