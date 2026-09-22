@@ -1,7 +1,8 @@
 package com.example.labyshop
 
 class AuthRepository(
-    private val api: AuthAPI
+    private val api: AuthAPI,
+    private val tokenStorage: TokenStorage,
 ) {
     suspend fun login(
         identifier: String,
@@ -13,6 +14,13 @@ class AuthRepository(
             password = password
         )
 
-        return api.login(request)
+        val response = api.login(request)
+
+        tokenStorage.saveTokens(
+            accessToken = response.accessToken,
+            refreshToken = response.refreshToken
+        )
+
+        return response
     }
 }
