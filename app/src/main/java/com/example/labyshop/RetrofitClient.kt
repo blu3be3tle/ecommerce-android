@@ -7,7 +7,7 @@ import retrofit2.converter.kotlinx.serialization.asConverterFactory
 
 object RetrofitClient {
 
-    private const val BASE_URL = "http://192.168.0.123:8000/"
+    private const val BASE_URL = "https://shajme.com/"
 
     private val json = Json {
         ignoreUnknownKeys = true

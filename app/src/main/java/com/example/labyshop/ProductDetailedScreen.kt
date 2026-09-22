@@ -170,7 +170,7 @@ fun ProductDetailScreen(
         ) {
             item {
                 AsyncImage(
-                    model = imageUrl,
+                    model = product.image?.large ?: imageUrl,
                     contentDescription = product.title,
                     modifier = Modifier
                         .fillMaxWidth()
