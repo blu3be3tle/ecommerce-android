@@ -11,7 +11,7 @@ data class LoginRequest(
 
 @Serializable
 data class LoginResponse(
-    val suppress: Boolean,
+    val success: Boolean,
     val account: Account,
     @SerialName("access_token")
     val accessToken: String,
