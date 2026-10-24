@@ -23,6 +23,8 @@ import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.LaunchedEffect
+
 
 @Composable
 fun LoginScreen(
@@ -41,10 +43,11 @@ fun LoginScreen(
     val loginError by viewModel.loginError.collectAsState()
     val loginSuccess by viewModel.loginSuccess.collectAsState()
 
-    if (loginSuccess) {
-        onLoginSuccess()
+    LaunchedEffect(loginSuccess) {
+        if (loginSuccess) {
+            onLoginSuccess()
+        }
     }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
