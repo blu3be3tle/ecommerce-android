@@ -27,7 +27,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -38,6 +37,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.LaunchedEffect
+
 
 
 
@@ -86,10 +88,31 @@ fun LabyShopApp() {
 
     val navController = rememberNavController()
 
+    val context = LocalContext.current
+
+    val tokenStorage = remember {
+        TokenStorage(context.applicationContext)
+    }
+
+    val authRepository = remember {
+        AuthRepository(
+            api = AuthRetrofitClient.api,
+            tokenStorage = tokenStorage
+        )
+    }
+
+    val authFactory = remember {
+        AuthViewModelFactory(authRepository)
+    }
+
+    val authViewModel: AuthViewModel = viewModel(
+        factory = authFactory
+    )
+
 
     NavHost(
         navController = navController,
-        startDestination = "products"
+        startDestination = "login"
     ) {
 
         composable("products") {
@@ -231,6 +254,20 @@ fun LabyShopApp() {
                         item != cartItem
                     }
 
+                }
+            )
+        }
+
+        composable("login") {
+            LoginScreen(
+                viewModel = authViewModel,
+                onLoginSuccess = {
+                    navController.navigate("products") {
+                        popUpTo("login") {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    }
                 }
             )
         }
