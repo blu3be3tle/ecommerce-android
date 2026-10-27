@@ -39,3 +39,9 @@ data class Account(
     val phoneVerified: Boolean,
     val status: String
 )
+
+@Serializable
+data class RefreshTokenRequest(
+    @SerialName("refresh_token")
+    val refreshToken: String,
+)
