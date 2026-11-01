@@ -39,7 +39,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.LaunchedEffect
-
+import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 
 
 
@@ -109,11 +112,91 @@ fun LabyShopApp() {
         factory = authFactory
     )
 
+    val sessionFactory = remember {
+        SessionViewModelFactory(authRepository)
+    }
+
+    val sessionViewModel: SessionViewModel = viewModel(
+        factory = sessionFactory
+    )
+
 
     NavHost(
         navController = navController,
-        startDestination = "login"
+        startDestination = "startup"
     ) {
+
+        composable("startup") {
+            val sessionStatus by sessionViewModel.status.collectAsState()
+            val sessionError by sessionViewModel.error.collectAsState()
+
+            LaunchedEffect(Unit) {
+                sessionViewModel.checkSession()
+            }
+
+            LaunchedEffect(sessionStatus) {
+                when (sessionStatus) {
+                    SessionStatus.AUTHENTICATED -> {
+                        navController.navigate("products") {
+                            popUpTo("startup") { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    }
+                    SessionStatus.UNAUTHENTICATED -> {
+                        navController.navigate("login") {
+                            popUpTo("startup") { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    }
+                    else -> Unit
+                }
+            }
+
+
+            when (sessionStatus) {
+                SessionStatus.CHECKING -> {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .safeDrawingPadding(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        CircularProgressIndicator()
+                        Text("Checking your session...")
+                    }
+                }
+                SessionStatus.ERROR -> {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .safeDrawingPadding()
+                            .padding(24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(sessionError ?: "Unable to check your session.")
+                        Button(
+                            onClick = {
+                                sessionViewModel.checkSession()
+                            }
+                        ) {
+                            Text("Retry")
+                        }
+                    }
+                }
+                else -> {
+
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
+            }
+        }
 
         composable("products") {
 
