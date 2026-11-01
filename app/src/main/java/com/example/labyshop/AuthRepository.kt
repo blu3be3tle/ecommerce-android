@@ -45,10 +45,10 @@ class AuthRepository(
             ?: return false
 
         return try {
-            api.getCurrentAccount(
+            val response = api.getCurrentAccount(
                 authorization = "Bearer $accessToken"
             )
-            true
+           response.success
         } catch (e: retrofit2.HttpException) {
             if (e.code() == 401) {
                 false
