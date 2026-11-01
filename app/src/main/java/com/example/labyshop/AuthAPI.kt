@@ -19,6 +19,6 @@ interface AuthAPI{
     @GET("api/v1/auth/me")
     suspend fun getCurrentAccount(
         @Header("Authorization") authorization: String
-    ): Account
+    ): CurrentAccountResponse
 
 }
