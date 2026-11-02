@@ -14,7 +14,7 @@ interface AuthAPI{
     @POST("api/v1/auth/token/refresh")
     suspend fun refreshToken(
         @Body request: RefreshTokenRequest
-    ): LoginResponse
+    ): RefreshTokenResponse
 
     @GET("api/v1/auth/me")
     suspend fun getCurrentAccount(
