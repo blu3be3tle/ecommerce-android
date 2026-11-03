@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.CancellationException
 
 class AuthViewModel(
     private val repository: AuthRepository
@@ -18,6 +19,9 @@ class AuthViewModel(
 
     private val _loginSuccess = MutableStateFlow(false)
     val loginSuccess: StateFlow<Boolean> = _loginSuccess
+
+    private val _logoutSuccess = MutableStateFlow(false)
+    val logoutSuccess: StateFlow<Boolean> = _logoutSuccess
 
     fun login(
         identifier: String,
@@ -34,11 +38,38 @@ class AuthViewModel(
                     password = password
                 )
                 _loginSuccess.value = true
-            } catch (e: Exception) {
+            } catch (e: CancellationException) {
+                throw e
+            }
+
+            catch (e: Exception) {
                 _loginError.value = e.localizedMessage ?: "Login failed"
             } finally {
                 _isLoading.value = false
             }
         }
     }
+
+    fun logout() {
+        viewModelScope.launch {
+            _isLoading.value = true
+            _logoutSuccess.value = false
+            _loginError.value = null
+
+            try {
+                repository.logout()
+                _logoutSuccess.value = true
+            } catch (e: CancellationException) {
+                throw e
+            }
+
+            catch (e: Exception) {
+                _loginError.value = e.localizedMessage ?: "Logout failed"
+                } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+
 }
