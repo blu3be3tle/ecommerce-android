@@ -1,5 +1,6 @@
 package com.example.labyshop
 
+
 class AuthRepository(
     private val api: AuthAPI,
     private val tokenStorage: TokenStorage,
@@ -48,7 +49,7 @@ class AuthRepository(
             verifyAccessToken(accessToken)
         } catch (e: retrofit2.HttpException) {
 
-            if (e.code() == 401) {
+            if (e.code() != 401) {
                 throw e
             }
 
@@ -83,5 +84,29 @@ class AuthRepository(
         }
 
 
+    suspend fun logout(): Boolean {
 
-}
+        val refreshToken = tokenStorage.getRefreshToken()
+
+        return try {
+            if (refreshToken != null) {
+                api.logout(
+                    request = LogoutRequest(
+                        refreshToken = refreshToken
+                    )
+                )
+            }
+            true
+        } catch (e: retrofit2.HttpException) {
+            if (e.code() == 401) {
+                true
+            } else {
+                false
+            }
+         } catch (e: Exception) {
+             false
+         } finally {
+             tokenStorage.clearTokens()
+         }
+        }
+    }
