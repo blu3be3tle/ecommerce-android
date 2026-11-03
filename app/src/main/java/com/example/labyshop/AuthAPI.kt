@@ -21,4 +21,9 @@ interface AuthAPI{
         @Header("Authorization") authorization: String
     ): CurrentAccountResponse
 
+    @POST("api/v1/auth/logout")
+    suspend fun logout(
+        @Body request: LogoutRequest
+    )
+
 }
