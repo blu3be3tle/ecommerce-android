@@ -200,6 +200,21 @@ fun LabyShopApp() {
 
         composable("products") {
 
+            val logoutSuccess by authViewModel.logoutSuccess.collectAsState()
+
+            LaunchedEffect(
+                logoutSuccess,
+            ) {
+                if (logoutSuccess) {
+                    navController.navigate("login") {
+                        popUpTo("products") {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    }
+                }
+            }
+
             Scaffold(
                 topBar = {
                         TopAppBar(
@@ -218,6 +233,17 @@ fun LabyShopApp() {
                         ) {
                             Text(
                                 text = if (cartItemCount > 0) {"Cart ($cartItemCount)"}  else {"Cart"},
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+
+                        TextButton(
+                            onClick = {
+                                authViewModel.logout()
+                            }
+                        ) {
+                            Text(
+                                text = "Logout",
                                 fontWeight = FontWeight.Bold
                             )
                         }
