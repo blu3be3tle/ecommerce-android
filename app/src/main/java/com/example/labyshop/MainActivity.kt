@@ -43,7 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-
+import android.util.Log
 
 
 private const val DEFAULT_PRODUCT_IMAGE =
@@ -202,9 +202,10 @@ fun LabyShopApp() {
 
             val logoutSuccess by authViewModel.logoutSuccess.collectAsState()
 
-            LaunchedEffect(
-                logoutSuccess,
-            ) {
+            LaunchedEffect(logoutSuccess) {
+
+                Log.d("AUTH_LOGOUT", "Products observed logoutSuccess = $logoutSuccess")
+
                 if (logoutSuccess) {
                     navController.navigate("login") {
                         popUpTo("products") {
@@ -212,6 +213,8 @@ fun LabyShopApp() {
                         }
                         launchSingleTop = true
                     }
+
+                    authViewModel.resetLogoutState()
                 }
             }
 
