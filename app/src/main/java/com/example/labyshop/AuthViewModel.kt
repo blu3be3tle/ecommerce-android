@@ -1,5 +1,6 @@
 package com.example.labyshop
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.StateFlow
@@ -54,6 +55,7 @@ class AuthViewModel(
         viewModelScope.launch {
             _isLoading.value = true
             _logoutSuccess.value = false
+            _loginSuccess.value = false
             _loginError.value = null
 
             try {
@@ -69,6 +71,10 @@ class AuthViewModel(
                 _isLoading.value = false
             }
         }
+    }
+
+    fun resetLogoutState() {
+        _logoutSuccess.value = false
     }
 
 
